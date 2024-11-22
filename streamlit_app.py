@@ -9,12 +9,9 @@ from collections import Counter
 from Bio.SeqUtils import gc_fraction
 from collections import Counter
 st.title("**Dashboard Genético**")
-# Función para obtener una secuencia de ADN desde GenBank (usando Entrez de Biopython)
-# Función para buscar en GenBank usando Entrez
 def buscar_proteinas(query):
     try:
-        # Realizamos la búsqueda en GenBank
-        Entrez.email = "tu_email@example.com"  # Es importante poner tu correo aquí
+        Entrez.email = "tu_email@example.com"  
         handle = Entrez.esearch(db="protein", term=query, retmax=10)
         record = Entrez.read(handle)
         handle.close()
@@ -23,12 +20,10 @@ def buscar_proteinas(query):
         return record["IdList"]
     except Exception as e:
         return f"Error al buscar en GenBank: {e}"
-# Configuración de Streamlit
 st.title("Búsqueda en GenBank")
 nombre = st.text_input("Introduce un nombre o término de búsqueda:", "")
 if nombre:
     st.write(f"Buscando en GenBank para: {nombre}...")
-    # Buscar el ID en GenBank
     resultado = buscar_proteinas(nombre)
     if resultado:
         st.write("IDs encontrados en GenBank:")
@@ -37,12 +32,14 @@ if nombre:
             id_full=Entrez.efetch(db="protein", id=id_seleccionado, rettype="genbank", retmode="text")
             id_seq=SeqIO.read(id_full, "genbank")
             sequence=id_seq.seq
+            #AQUÍ ES LA INFORMACIÓN GENERAL#
             st.subheader("Información General:")
             st.write(f"*Acceso*: {id(id_full)}")
             st.write(f"*Organismo de origen*: {id_seq.annotations.get('organism', 'No disponible')}")
             st.write(f"*Longitud de la secuencia*: {len(sequence)} pares de bases")
             st.write("*Primeros 200 nucleótidos de la secuencia:*")
             st.write(sequence[:200])
+            #AQUÍ LA COMPOSICIÓN DE AMINOÁCIDOS#
             st.subheader("Composición de Aminoácidos:")
             aminoacidos = Counter(sequence)
             aminoacidos_list = list(aminoacidos.items())
@@ -58,6 +55,7 @@ if nombre:
             plt.yticks(color="white")
             plt.gca().set_facecolor('#0E1117')
             st.pyplot(plt)
+            #PORCENTAJES DE CG"
             st.subheader("Porcentajes de CG:")
             count_c = sequence.count("C")
             count_g = sequence.count("G")
@@ -71,7 +69,7 @@ if nombre:
                                             colors=sns.color_palette("Set1", 2),
                                             textprops={'color': 'none'},
                                             shadow=False,
-                                            wedgeprops={'edgecolor': 'black'})  # Cambiar color del texto
+                                            wedgeprops={'edgecolor': 'black'})
             for autotext in autotexts:
                         autotext.set_color('white')
                         autotext.set_fontsize(14)
@@ -82,6 +80,10 @@ if nombre:
             plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 
             plt.gca().set_facecolor('#0E1117')  
             st.pyplot(plt)   
+            #DE APARTIR DE AQUÍ PUEDEN EMPEZAR A ESCRIBIR#
+            #3 TABS DE SANGRÍA, USAR st.write Y ESAS MIELDAS#
+            #ECHENLE GANAS CABRONES#
+            
     else:
         st.write("No se encontraron resultados.")
         st.write("¡Asegurate de utilizar el nombre cientifico para buscar!")

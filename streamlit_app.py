@@ -1,60 +1,89 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-
-# Título y Descripción del Dashboard
-st.title("Dashboard sobre el Material Genético de la Rata")
-st.write("""
-Este dashboard proporciona información sobre el material genético de la rata, incluyendo la estructura de su ADN, sus cromosomas y otros aspectos relevantes.
-""")
-
-
-# Información básica sobre el material genético de la rata
-st.header("¿Qué es el material genético de la rata?")
-st.write("""
-El material genético de la rata está compuesto por un conjunto de cromosomas que contienen los genes responsables del desarrollo y funcionamiento de su organismo. La rata (Rattus norvegicus) es un modelo biológico comúnmente utilizado en investigación genética, debido a su similitud con los humanos en varios aspectos biológicos.
-""")
-
-# Imagen representativa del genoma de la rata (si tienes una)
-st.image('assets/rat_genome.png', caption='Esquema del genoma de la rata', use_column_width=True)
-
-# Información sobre los cromosomas
-st.header("Cromosomas de la Rata")
-st.write("""
-La rata tiene un total de 42 cromosomas, distribuidos en 21 pares. Este conjunto incluye cromosomas autosómicos y sexuales. La estructura del ADN en estos cromosomas es clave para comprender la genética de la rata y su utilidad en la investigación biomédica.
-""")
-
-# Datos de ejemplo: Genómica de la Rata (p.ej. genes importantes)
-data = {
-    'Gen': ['BRCA1', 'TP53', 'AKT1', 'EGFR', 'MYC'],
-    'Función': ['Reparación del ADN', 'Supresor de tumores', 'Señalización celular', 'Crecimiento celular', 'Regulación de la transcripción'],
-    'Enfermedades asociadas': ['Cáncer', 'Cáncer', 'Cáncer, diabetes', 'Cáncer', 'Cáncer']
-}
-
-# Convertir a DataFrame
-df = pd.DataFrame(data)
-
-# Mostrar tabla de datos de genes
-st.subheader("Ejemplos de genes en la rata y sus funciones")
-st.write(df)
-
-# Gráfico interactivo sobre la distribución de genes en los cromosomas de la rata
-fig = px.bar(df, x='Gen', y='Enfermedades asociadas', color='Función', title="Distribución de Funciones Genéticas en la Rata")
-st.plotly_chart(fig)
-
-# Crear una sección sobre aplicaciones del estudio genético de la rata
-st.header("Aplicaciones del Estudio Genético de la Rata")
-st.write("""
-El estudio del material genético de la rata ha llevado a avances importantes en la biomedicina, como la comprensión de enfermedades humanas, el desarrollo de terapias génicas, y la mejora de tratamientos para enfermedades como el cáncer, la diabetes y enfermedades neurodegenerativas.
-""")
-
-# Sección para exploración interactiva
-st.header("Explora los datos genéticos de la rata")
-option = st.selectbox("Selecciona un gen para ver más información", df['Gen'])
-
-if option:
-    selected_data = df[df['Gen'] == option]
-    st.write(f"**Gen Seleccionado:** {selected_data['Gen'].values[0]}")
-    st.write(f"**Función:** {selected_data['Función'].values[0]}")
-    st.write(f"**Enfermedades asociadas:** {selected_data['Enfermedades asociadas'].values[0]}")
-
+import matplotlib.pyplot as plt
+import seaborn as sns
+from Bio import Entrez, SeqIO
+import numpy as np
+import requests
+from collections import Counter
+from Bio.SeqUtils import gc_fraction
+from collections import Counter
+st.title("**Dashboard Genético**")
+# Función para obtener una secuencia de ADN desde GenBank (usando Entrez de Biopython)
+# Función para buscar en GenBank usando Entrez
+def buscar_proteinas(query):
+    try:
+        # Realizamos la búsqueda en GenBank
+        Entrez.email = "tu_email@example.com"  # Es importante poner tu correo aquí
+        handle = Entrez.esearch(db="protein", term=query, retmax=10)
+        record = Entrez.read(handle)
+        handle.close()
+        if record["Count"] == "0":
+            return None
+        return record["IdList"]
+    except Exception as e:
+        return f"Error al buscar en GenBank: {e}"
+# Configuración de Streamlit
+st.title("Búsqueda en GenBank")
+nombre = st.text_input("Introduce un nombre o término de búsqueda:", "")
+if nombre:
+    st.write(f"Buscando en GenBank para: {nombre}...")
+    # Buscar el ID en GenBank
+    resultado = buscar_proteinas(nombre)
+    if resultado:
+        st.write("IDs encontrados en GenBank:")
+        id_seleccionado = st.selectbox("Selecciona un ID de GenBank", resultado)
+        if st.button("Obtener Info"):
+            id_full=Entrez.efetch(db="protein", id=id_seleccionado, rettype="genbank", retmode="text")
+            id_seq=SeqIO.read(id_full, "genbank")
+            sequence=id_seq.seq
+            st.subheader("Información General:")
+            st.write(f"*Acceso*: {id(id_full)}")
+            st.write(f"*Organismo de origen*: {id_seq.annotations.get('organism', 'No disponible')}")
+            st.write(f"*Longitud de la secuencia*: {len(sequence)} pares de bases")
+            st.write("*Primeros 200 nucleótidos de la secuencia:*")
+            st.write(sequence[:200])
+            st.subheader("Composición de Aminoácidos:")
+            aminoacidos = Counter(sequence)
+            aminoacidos_list = list(aminoacidos.items())
+            aminoacidos_list.sort()
+            aminoacidos_names, counts = zip(*aminoacidos_list)
+            plt.figure(figsize=(10, 6), facecolor='#0E1117')
+            sns.set_theme(style="darkgrid")
+            sns.barplot(x=list(aminoacidos_names), y=list(counts), palette="Set2")
+            plt.title("Composición de Aminoácidos", fontsize=16, color="White")
+            plt.xlabel("Aminoácidos", fontsize=12, color="White")
+            plt.ylabel("Frecuencia", fontsize=12, color="White")
+            plt.xticks(rotation=45, color="white")
+            plt.yticks(color="white")
+            plt.gca().set_facecolor('#0E1117')
+            st.pyplot(plt)
+            st.subheader("Porcentajes de CG:")
+            count_c = sequence.count("C")
+            count_g = sequence.count("G")
+            total = len(sequence)
+            gc_content = (count_c + count_g) / total * 100
+            plt.figure(figsize=(6, 6), facecolor='#0E1117')  
+            sns.set_theme(style="darkgrid") 
+            wedges, texts, autotexts = plt.pie([gc_content, 100 - gc_content], 
+                                            labels=["GC", "Resto"], 
+                                            autopct="%1.1f%%", 
+                                            colors=sns.color_palette("Set1", 2),
+                                            textprops={'color': 'none'},
+                                            shadow=False,
+                                            wedgeprops={'edgecolor': 'black'})  # Cambiar color del texto
+            for autotext in autotexts:
+                        autotext.set_color('white')
+                        autotext.set_fontsize(14)
+            for text in texts:
+                        text.set_color('white')
+                        text.set_fontsize(14)
+            plt.pie([gc_content, 100 - gc_content], labels=["GC", "Resto"], autopct="%1.1f%%", colors=sns.color_palette("Set1", 2))
+            plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 
+            plt.gca().set_facecolor('#0E1117')  
+            st.pyplot(plt)   
+    else:
+        st.write("No se encontraron resultados.")
+        st.write("¡Asegurate de utilizar el nombre cientifico para buscar!")
+else:
+    st.write("¡Asegurate de utilizar el nombre cientifico para buscar!")

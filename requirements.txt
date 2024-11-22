@@ -1,5 +1,8 @@
-streamlit==1.21.0
-pandas==1.5.3
-plotly==5.10.0
-matplotlib==3.7.0
-seaborn==0.12.2
+streamlit
+biopython
+matplotlib
+seaborn
+pandas
+requests
+plotly
+bs4 

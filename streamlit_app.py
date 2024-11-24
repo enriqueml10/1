@@ -78,7 +78,6 @@ if nombre:
                         text.set_fontsize(14)
             plt.pie([gc_content, 100 - gc_content], labels=["GC", "Resto"], autopct="%1.1f%%", colors=sns.color_palette("Set1", 2))
             plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 
-            plt.gca().set_facecolor('#0E1117')  
             st.pyplot(plt)   
             #DE APARTIR DE AQUÍ PUEDEN EMPEZAR A ESCRIBIR#
             #3 TABS DE SANGRÍA, USAR st.write Y ESAS MIELDAS#

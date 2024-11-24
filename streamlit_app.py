@@ -7,6 +7,7 @@ import numpy as np
 import requests
 from collections import Counter
 from Bio.SeqUtils import gc_fraction
+from bs4 import BeautifulSoup
 from collections import Counter
 st.title("**Dashboard Genético**")
 def buscar_proteinas(query):

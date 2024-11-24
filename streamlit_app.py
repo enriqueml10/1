@@ -21,7 +21,7 @@ def buscar_proteinas(query):
     except Exception as e:
         return f"Error al buscar en GenBank: {e}"
 st.title("Búsqueda en GenBank")
-nombre = st.text_input("Introduce un nombre o término de búsqueda:", "")
+nombre = st.text_input("Introduce el nombre cíentifico de la especie para hacer la búsqueda:", "")
 if nombre:
     st.write(f"Buscando en GenBank para: {nombre}...")
     resultado = buscar_proteinas(nombre)
@@ -78,6 +78,7 @@ if nombre:
                         text.set_fontsize(14)
             plt.pie([gc_content, 100 - gc_content], labels=["GC", "Resto"], autopct="%1.1f%%", colors=sns.color_palette("Set1", 2))
             plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 
+            plt.gca().set_facecolor('#0E1117')  
             st.pyplot(plt)   
             #DE APARTIR DE AQUÍ PUEDEN EMPEZAR A ESCRIBIR#
             #3 TABS DE SANGRÍA, USAR st.write Y ESAS MIELDAS#

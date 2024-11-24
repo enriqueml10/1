@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from Bio import Entrez, SeqIO
 import numpy as np
-import requests
 from collections import Counter
-from Bio.SeqUtils import gc_fraction
-from bs4 import BeautifulSoup
-from collections import Counter
+from Bio.SeqUtils import molecular_weight, IsoelectricPoint
+
 st.title("**Dashboard Genético**")
+
+# Función para buscar proteínas en GenBank
 def buscar_proteinas(query):
     try:
         Entrez.email = "tu_email@example.com"  
@@ -21,26 +21,58 @@ def buscar_proteinas(query):
         return record["IdList"]
     except Exception as e:
         return f"Error al buscar en GenBank: {e}"
+
+# Función para calcular propiedades biofísicas
+def calcular_propiedades(sequence):
+    # Reemplazamos 'X' por 'A' para evitar problemas
+    sequence = sequence.replace("X", "A")
+
+    # Peso molecular de la proteína
+    mw = molecular_weight(sequence, seq_type='protein')
+
+    # Punto isoeléctrico de la proteína
+    try:
+        ip = IsoelectricPoint.IsoelectricPoint(sequence)
+        pI = ip.pi()  # Método correcto es pi() en lugar de isoelectric_point()
+    except ValueError as e:
+        st.error(f"Error de valor: {e}")
+        pI = None 
+    except Exception as e:
+        st.error(f"Error calculando el punto isoeléctrico: {e}")
+        pI = None 
+
+    return mw, pI
+
 st.title("Búsqueda en GenBank")
-nombre = st.text_input("Introduce el nombre cíentifico de la especie para hacer la búsqueda:", "")
+nombre = st.text_input("Introduce un nombre o término de búsqueda:", "")
+
 if nombre:
     st.write(f"Buscando en GenBank para: {nombre}...")
     resultado = buscar_proteinas(nombre)
     if resultado:
         st.write("IDs encontrados en GenBank:")
         id_seleccionado = st.selectbox("Selecciona un ID de GenBank", resultado)
+        
         if st.button("Obtener Info"):
-            id_full=Entrez.efetch(db="protein", id=id_seleccionado, rettype="genbank", retmode="text")
-            id_seq=SeqIO.read(id_full, "genbank")
-            sequence=id_seq.seq
-            #AQUÍ ES LA INFORMACIÓN GENERAL#
+            id_full = Entrez.efetch(db="protein", id=id_seleccionado, rettype="genbank", retmode="text")
+            id_seq = SeqIO.read(id_full, "genbank")
+            sequence = id_seq.seq
+
+            # Información general
             st.subheader("Información General:")
-            st.write(f"*Acceso*: {id(id_full)}")
+            st.write(f"*Acceso*: {id_seleccionado}")
             st.write(f"*Organismo de origen*: {id_seq.annotations.get('organism', 'No disponible')}")
             st.write(f"*Longitud de la secuencia*: {len(sequence)} pares de bases")
             st.write("*Primeros 200 nucleótidos de la secuencia:*")
             st.write(sequence[:200])
-            #AQUÍ LA COMPOSICIÓN DE AMINOÁCIDOS#
+
+            # Propiedades biofísicas
+            st.subheader("Propiedades Biofísicas:")
+            mw, pI = calcular_propiedades(sequence)
+            st.write(f"**Peso Molecular**: {mw:.2f} Da")
+            st.write(f"**Punto Isoeléctrico (pI)**: {pI:.2f}" if pI is not None else "**Punto Isoeléctrico (pI)**: No calculable")
+
+            # Composición de aminoácidos
             st.subheader("Composición de Aminoácidos:")
             aminoacidos = Counter(sequence)
             aminoacidos_list = list(aminoacidos.items())
@@ -56,8 +88,9 @@ if nombre:
             plt.yticks(color="white")
             plt.gca().set_facecolor('#0E1117')
             st.pyplot(plt)
-            #PORCENTAJES DE CG"
-            st.subheader("Porcentajes de CG:")
+
+            # Porcentajes de GC
+            st.subheader("Porcentajes de GC:")
             count_c = sequence.count("C")
             count_g = sequence.count("G")
             total = len(sequence)
@@ -65,12 +98,12 @@ if nombre:
             plt.figure(figsize=(6, 6), facecolor='#0E1117')  
             sns.set_theme(style="darkgrid") 
             wedges, texts, autotexts = plt.pie([gc_content, 100 - gc_content], 
-                                            labels=["GC", "Resto"], 
-                                            autopct="%1.1f%%", 
-                                            colors=sns.color_palette("Set1", 2),
-                                            textprops={'color': 'none'},
-                                            shadow=False,
-                                            wedgeprops={'edgecolor': 'black'})
+                                                labels=["GC", "Resto"], 
+                                                autopct="%1.1f%%", 
+                                                colors=sns.color_palette("Set1", 2),
+                                                textprops={'color': 'none'},
+                                                shadow=False,
+                                                wedgeprops={'edgecolor': 'black'})
             for autotext in autotexts:
                         autotext.set_color('white')
                         autotext.set_fontsize(14)
@@ -81,12 +114,13 @@ if nombre:
             plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 
             plt.gca().set_facecolor('#0E1117')  
             st.pyplot(plt)   
-            #DE APARTIR DE AQUÍ PUEDEN EMPEZAR A ESCRIBIR#
-            #3 TABS DE SANGRÍA, USAR st.write Y ESAS MIELDAS#
-            #ECHENLE GANAS CABRONES#
-            
+
+
+   
     else:
-        st.write("No se encontraron resultados.")
-        st.write("¡Asegurate de utilizar el nombre cientifico para buscar!")
+        st.write("No se encontraron resultados para el ID de GenBank proporcionado.")
+        st.write("¡Asegúrate de utilizar el ID correcto o el nombre científico para buscar!")
 else:
-    st.write("¡Asegurate de utilizar el nombre cientifico para buscar!")
+    st.write("Por favor, introduce un ID de GenBank válido para continuar.")
+
+

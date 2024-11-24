@@ -103,7 +103,6 @@ if nombre:
                                             colors=sns.color_palette("Set1", 2),
                                             textprops={'color': 'none'},
                                             shadow=False,
-                                            wedgeprops={'edgecolor': 'black'})
             for autotext in autotexts:
                         autotext.set_color('white')
                         autotext.set_fontsize(14)

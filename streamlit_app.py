@@ -72,6 +72,7 @@ if nombre:
                                             autopct="%1.1f%%", 
                                             colors=sns.color_palette("Set1", 1),
                                             shadow=False,
+                                            autotextprops={'edgecolor': 'white'},
                                             wedgeprops={'edgecolor': 'white'})
             for autotext in autotexts:
                 autotext.set_color('white')

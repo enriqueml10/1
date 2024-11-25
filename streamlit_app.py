@@ -66,7 +66,7 @@ if nombre:
             total = len(sequence)
             gc_content = (count_c + count_g) / total * 100
             plt.figure(figsize=(6, 6), facecolor='#0E1117')  
-            sns.set_theme(style="darkgrid") 
+            sns.set_theme(style="white") 
             wedges, texts, autotexts = plt.pie([gc_content, 100 - gc_content], 
                                             labels=["GC", "Resto"], 
                                             autopct="%1.1f%%", 

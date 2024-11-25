@@ -71,9 +71,9 @@ if nombre:
                                             labels=["GC", "Resto"], 
                                             autopct="%1.1f%%", 
                                             colors=sns.color_palette("Set1", 2),
-                                            textprops={'color': 'white'},
+                                            textprops={'color': 'none'},
                                             shadow=False,
-                                            wedgeprops={'edgecolor': 'none'})
+                                            wedgeprops={'edgecolor': 'white'})
 
             plt.pie([gc_content, 100 - gc_content], labels=["GC", "Resto"], autopct="%1.1f%%", colors=sns.color_palette("Set1", 2))
             plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 

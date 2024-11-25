@@ -21,31 +21,6 @@ def buscar_proteinas(query):
         return record["IdList"]
     except Exception as e:
         return f"Error al buscar en GenBank: {e}"
-def get_scientific_name(common_name):
-    # Reemplazamos los espacios por guiones y hacemos la búsqueda en Wikipedia
-    query = common_name.replace(" ", "_")
-    url = f"https://es.wikipedia.org/wiki/{query}"
-    try:
-        # Hacemos una solicitud HTTP para obtener el contenido de la página
-        response = requests.get(url)
-        response.raise_for_status()  # Lanza un error si la respuesta no es 200 OK
-        
-        # Usamos BeautifulSoup para analizar el contenido HTML de la página
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Buscamos el nombre científico en la página (generalmente está en la infobox)
-        infobox = soup.find('table', {'class': 'infobox'})
-        if infobox:
-            rows = infobox.find_all('tr')
-            for row in rows:
-                th = row.find('th')
-                td = row.find('td')
-                if th and td and 'nombre científico' in th.get_text().lower():
-                    scientific_name = td.get_text(strip=True)
-                    return f"El nombre científico de {common_name} es: {scientific_name}"
-        return "No se encontró el nombre científico en la página de Wikipedia."
-    except requests.RequestException as e:
-        return f"Error al buscar la información: {e}"
 # Función principal que solicita al usuario el nombre común de la especie
 def main():
     print("Bienvenido al sistema de búsqueda de nombres científicos en Wikipedia.")

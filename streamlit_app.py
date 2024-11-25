@@ -58,8 +58,9 @@ def obtener_nombre_comun(nombre_cientifico):
             if "común" in linea.lower():
                 return linea.strip()
     return "No se encontró el nombre común."
-    nombre_comun = obtener_nombre_comun(nombre_cientifico)
+    nombre_comun = obtener_nombre_comun(nombre)
 print(f"Nombre común: {nombre_comun}")
+
 st.title("Búsqueda en GenBank")
 nombre = st.text_input("Introduce el nombre cíentifico de la especie para hacer la búsqueda:", "")
 if nombre:

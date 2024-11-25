@@ -80,7 +80,7 @@ if nombre:
             for text in texts:
                         text.set_color('white')
                         text.set_fontsize(14)
-            plt.pie([gc_content, 100 - gc_content], labels=["GC", "Resto"], autopct="%1.1f%%", colors=sns.color_palette("Set1", 'none'))
+            plt.pie([gc_content, 100 - gc_content], labels=["GC", "Resto"], autopct="%1.1f%%", colors=sns.color_palette("Set1", 1))
             plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 
             plt.gca().set_facecolor('#FFFFFF')  
             st.pyplot(plt)   

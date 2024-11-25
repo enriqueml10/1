@@ -7,3 +7,4 @@ requests
 plotly
 bs4 
 beautifulsoup4
+wikipedia-api

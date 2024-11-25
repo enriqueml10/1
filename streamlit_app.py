@@ -74,6 +74,8 @@ if nombre:
                                             textprops={'color': 'white'},
                                             shadow=False,
                                             wedgeprops={'edgecolor': 'white'})
+            for autotext in autotexts:
+                autotext.set_color('white')
 
             plt.pie([gc_content, 100 - gc_content], labels=["GC", "Resto"], autopct="%1.1f%%", colors=sns.color_palette("Set1", 2))
             plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 

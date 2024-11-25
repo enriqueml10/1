@@ -73,7 +73,7 @@ if nombre:
                                             colors=sns.color_palette("Set1", 2),
                                             textprops={'color': 'none'},
                                             shadow=False,
-                                            wedgeprops={'edgecolor': 'black'})
+                                            wedgeprops={'edgecolor': 'none'})
 
             for text in texts:
                         text.set_color('white')

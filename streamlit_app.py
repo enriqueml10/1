@@ -22,9 +22,10 @@ def buscar_proteinas(query):
     except Exception as e:
         return f"Error al buscar en GenBank: {e}"
 def get_scientific_name(common_name):
-    # Reemplazamos los espacios por guiones y hacemos la búsqueda en Wikipedia
+    # Reemplazamos los espacios por guiones bajos y preparamos la búsqueda en Wikipedia
     query = common_name.replace(" ", "_")
     url = f"https://es.wikipedia.org/wiki/{query}"
+
     try:
         # Hacemos una solicitud HTTP para obtener el contenido de la página
         response = requests.get(url)
@@ -33,7 +34,7 @@ def get_scientific_name(common_name):
         # Usamos BeautifulSoup para analizar el contenido HTML de la página
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Buscamos el nombre científico en la página (generalmente está en la infobox)
+        # Buscamos la infobox, donde generalmente se encuentra el nombre científico
         infobox = soup.find('table', {'class': 'infobox'})
         if infobox:
             rows = infobox.find_all('tr')
@@ -43,12 +44,16 @@ def get_scientific_name(common_name):
                 if th and td and 'nombre científico' in th.get_text().lower():
                     scientific_name = td.get_text(strip=True)
                     return f"El nombre científico de {common_name} es: {scientific_name}"
-        return "No se encontró el nombre científico en la página de Wikipedia."
+
+        # Si no se encuentra el nombre científico
+        return f"No se encontró el nombre científico para {common_name}."
     except requests.RequestException as e:
-        return f"Error al buscar la información: {e}"
-        def main():
-    print("Bienvenido al sistema de búsqueda de nombres científicos en Wikipedia.")
-    common_name = input("Introduce el nombre común de la especie: ")
+        return f"Error al intentar acceder a la página: {e}"
+
+# Función principal que solicita al usuario el nombre común de la especie
+def main():
+    print("Bienvenido al sistema de búsqueda de nombres científicos.")
+    common_name = input("Introduce el nombre común del animal: ")
     result = get_scientific_name(common_name)
     print(result)
 

@@ -8,3 +8,5 @@ plotly
 bs4 
 beautifulsoup4
 wikipedia-api
+streamlit
+ete3

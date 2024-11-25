@@ -70,7 +70,7 @@ if nombre:
             wedges, texts, autotexts = plt.pie([gc_content, 100 - gc_content], 
                                             labels=["GC", "Resto"], 
                                             autopct="%1.1f%%", 
-                                            colors=sns.color_palette("Set1", 2),
+                                            colors=sns.color_palette("Set1", 1),
                                             textprops={'color': 'none'},
                                             shadow=False,
                                             wedgeprops={'edgecolor': 'white'})

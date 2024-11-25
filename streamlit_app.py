@@ -73,7 +73,7 @@ if nombre:
                                             colors=sns.color_palette("Set1", 2),
                                             textprops={'color': 'none'},
                                             shadow=False,
-                                            wedgeprops={'edgecolor': 'white'})
+                                            wedgeprops={'edgecolor': 'black'})
             for autotext in autotexts:
                         autotext.set_color('white')
                         autotext.set_fontsize(14)
@@ -82,7 +82,7 @@ if nombre:
                         text.set_fontsize(14)
             plt.pie([gc_content, 100 - gc_content], labels=["GC", "Resto"], autopct="%1.1f%%", colors=sns.color_palette("Set1", 2))
             plt.title("Contenido GC de la Proteína", fontsize=16, color='white') 
-            plt.gca().set_facecolor('#0E1117')  
+            plt.gca().set_facecolor('#FFFFFF')  
             st.pyplot(plt)   
             #DE APARTIR DE AQUÍ PUEDEN EMPEZAR A ESCRIBIR#
             #3 TABS DE SANGRÍA, USAR st.write Y ESAS MIELDAS#

@@ -11,6 +11,10 @@ from bs4 import BeautifulSoup
 from collections import Counter
 from Bio.SeqUtils import molecular_weight, IsoelectricPoint
 import wikipediaapi
+from Bio.Align.Applications import ClustalwCommandline
+from Bio import Phylo
+import os
+from ete3 import Tree, TreeStyle
 st.title("**Dashboard Genético**")
 
 def buscar_proteinas(query):
@@ -110,7 +114,90 @@ if nombre:
             #DE APARTIR DE AQUÍ PUEDEN EMPEZAR A ESCRIBIR#
             #3 TABS DE SANGRÍA, USAR st.write Y ESAS MIELDAS#
             #ECHENLE GANAS CABRONES#
+            def obtener_secuencias_genbank(accession_numbers):
+    """Obtiene las secuencias de GenBank a partir de los números de acceso"""
+    secuencias = {}
+    
+    Entrez.email = "tu_email@example.com"  # Asegúrate de poner tu correo electrónico
+    
+    for accession in accession_numbers:
+        handle = Entrez.efetch(db="nucleotide", id=accession, rettype="gb", retmode="text")
+        record = handle.read()
+        handle.close()
+        
+        # Extraemos la secuencia
+        start = record.find("ORIGIN") + len("ORIGIN") + 1
+        end = record.find("//", start)
+        secuencia = record[start:end].replace("\n", "").replace(" ", "")
+        
+        secuencias[accession] = secuencia
+    
+    return secuencias
 
+def alinear_secuencias(secuencias):
+    """Alinea las secuencias utilizando ClustalW"""
+    with open("secuencias.fasta", "w") as f:
+        for accession, secuencia in secuencias.items():
+            f.write(f">{accession}\n{secuencia}\n")
+    
+    clustalw_cline = ClustalwCommandline("clustalw2", infile="secuencias.fasta")
+    stdout, stderr = clustalw_cline()
+    
+    # Leer el archivo alineado
+    alineamiento = AlignIO.read("secuencias.aln", "clustal")
+    return alineamiento
+
+def construir_arbol(alineamiento):
+    """Construye el árbol filogenético a partir del alineamiento"""
+    from Bio.Phylo.Applications import FasttreeCommandline
+    
+    # Guardar el alineamiento en formato PHYLIP
+    AlignIO.write(alineamiento, "alineamiento.phy", "phylip")
+    
+    # Usamos FastTree para generar el árbol
+    fasttree_cline = FasttreeCommandline(input="alineamiento.phy")
+    stdout, stderr = fasttree_cline()
+    
+    # Leer el árbol generado
+    arbol = Phylo.read(stdout, "newick")
+    return arbol
+
+def visualizar_arbol(arbol):
+    """Visualiza el árbol filogenético utilizando ETE3"""
+    newick_tree = arbol.format("newick")
+    tree = Tree(newick_tree)
+    
+    # Configuración de estilo de árbol
+    ts = TreeStyle()
+    ts.showLeafName = True
+    ts.showBranchSupport = True
+    
+    return tree, ts
+
+def main():
+    st.title("Visualización de Árbol Filogenético desde GenBank")
+    
+    # Solicitar los números de acceso de GenBank
+    accession_numbers = st.text_area("Introduce los números de acceso de GenBank (separados por comas):")
+    
+    if accession_numbers:
+        accession_numbers = [x.strip() for x in accession_numbers.split(",")]
+        
+        with st.spinner("Obteniendo secuencias de GenBank..."):
+            secuencias = obtener_secuencias_genbank(accession_numbers)
+        
+        with st.spinner("Alineando secuencias..."):
+            alineamiento = alinear_secuencias(secuencias)
+        
+        with st.spinner("Construyendo el árbol filogenético..."):
+            arbol = construir_arbol(alineamiento)
+        
+        with st.spinner("Visualizando el árbol..."):
+            tree, ts = visualizar_arbol(arbol)
+            st.pyplot(tree.render("%%inline", tree_style=ts))
+
+if __name__ == "__main__":
+    main()
             
     else:
         st.write("No se encontraron resultados.")

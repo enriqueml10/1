@@ -14,6 +14,15 @@ def get_scientific_name(common_name):
     # Reemplazamos los espacios por guiones bajos y preparamos la búsqueda en Wikipedia
     query = common_name.replace(" ", "_")
     url = f"https://es.wikipedia.org/wiki/{query}"
+# Función principal que solicita al usuario el nombre común de la especie
+def main():
+    print("Bienvenido al sistema de búsqueda de nombres científicos.")
+    common_name = input("Introduce el nombre común del animal: ")
+    result = get_scientific_name(common_name)
+    print(result)
+
+if __name__ == "__main__":
+    main()
 
     try:
         # Hacemos una solicitud HTTP para obtener el contenido de la página
@@ -39,12 +48,3 @@ def get_scientific_name(common_name):
     except requests.RequestException as e:
         return f"Error al intentar acceder a la página: {e}"
 
-# Función principal que solicita al usuario el nombre común de la especie
-def main():
-    print("Bienvenido al sistema de búsqueda de nombres científicos.")
-    common_name = input("Introduce el nombre común del animal: ")
-    result = get_scientific_name(common_name)
-    print(result)
-
-if __name__ == "__main__":
-    main()

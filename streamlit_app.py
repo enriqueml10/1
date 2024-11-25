@@ -71,7 +71,7 @@ if nombre:
                                             labels=["GC", "Resto"], 
                                             autopct="%1.1f%%", 
                                             colors=sns.color_palette("Set1", 2),
-                                            textprops={'color': 'none'},
+                                            textprops={'color': 'white'},
                                             shadow=False,
                                             wedgeprops={'edgecolor': 'white'})
 

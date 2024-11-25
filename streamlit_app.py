@@ -9,6 +9,7 @@ from collections import Counter
 from Bio.SeqUtils import gc_fraction
 from bs4 import BeautifulSoup
 from collections import Counter
+from Bio.SeqUtils import molecular_weight, IsoelectricPoint
 st.title("**Dashboard Genético**")
 
 def buscar_proteinas(query):

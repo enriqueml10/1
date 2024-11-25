@@ -46,6 +46,14 @@ def get_scientific_name(common_name):
         return "No se encontró el nombre científico en la página de Wikipedia."
     except requests.RequestException as e:
         return f"Error al buscar la información: {e}"
+        def main():
+    print("Bienvenido al sistema de búsqueda de nombres científicos en Wikipedia.")
+    common_name = input("Introduce el nombre común de la especie: ")
+    result = get_scientific_name(common_name)
+    print(result)
+
+if __name__ == "__main__":
+    main()
 st.title("Búsqueda en GenBank")
 nombre = st.text_input("Introduce el nombre cíentifico de la especie para hacer la búsqueda:", "")
 if nombre:

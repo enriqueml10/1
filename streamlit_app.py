@@ -10,17 +10,6 @@ from Bio.SeqUtils import gc_fraction
 from bs4 import BeautifulSoup
 from collections import Counter
 st.title("**Dashboard Genético**")
-def buscar_proteinas(query):
-    try:
-        Entrez.email = "tu_email@example.com"  
-        handle = Entrez.esearch(db="protein", term=query, retmax=10)
-        record = Entrez.read(handle)
-        handle.close()
-        if record["Count"] == "0":
-            return None
-        return record["IdList"]
-    except Exception as e:
-        return f"Error al buscar en GenBank: {e}"
 def get_scientific_name(common_name):
     # Reemplazamos los espacios por guiones bajos y preparamos la búsqueda en Wikipedia
     query = common_name.replace(" ", "_")

@@ -44,10 +44,10 @@ def calcular_propiedades(sequence):
         pI = None 
 
     return mw, pI
-def obtener_nombre_comun({id_seq.annotations.get('organism', 'No disponible')}):
+def obtener_nombre_comun(cientifico):
     """Obtener el nombre común de una especie usando Wikipedia"""
     wiki_wiki = wikipediaapi.Wikipedia('es')  # Idioma español
-    page = wiki_wiki.page({id_seq.annotations.get('organism', 'No disponible')})
+    page = wiki_wiki.page(cientifico)
     
     if page.exists():
         # Buscar en la introducción del artículo el nombre común
@@ -58,7 +58,7 @@ def obtener_nombre_comun({id_seq.annotations.get('organism', 'No disponible')}):
             if "común" in linea.lower():
                 return linea.strip()
     return "No se encontró el nombre común."
-    nombre_comun = obtener_nombre_comun({id_seq.annotations.get('organism', 'No disponible')})
+    nombre_comun = obtener_nombre_comun(cientifico)
 
 st.title("Búsqueda en GenBank")
 nombre = st.text_input("Introduce el nombre cíentifico de la especie para hacer la búsqueda:", "")
@@ -76,6 +76,7 @@ if nombre:
             st.subheader("Información General:")
             st.write(f"*Acceso*: {id(id_full)}")
             st.write(f"*Organismo de origen*: {id_seq.annotations.get('organism', 'No disponible')}")
+            cientifico = {id_seq.annotations.get('organism', 'No disponible')}
             st.write(f"*Nombre común*: {nombre_comun}")
             st.write(f"*Longitud de la secuencia*: {len(sequence)} pares de bases")
             st.write("*Primeros 200 nucleótidos de la secuencia:*")

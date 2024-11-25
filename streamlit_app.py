@@ -22,26 +22,6 @@ def buscar_proteinas(query):
         return record["IdList"]
     except Exception as e:
         return f"Error al buscar en GenBank: {e}"
-# Función para calcular propiedades biofísicas
-def calcular_propiedades(sequence):
-    # Reemplazamos 'X' por 'A' para evitar problemas
-    sequence = sequence.replace("X", "A")
-
-    # Peso molecular de la proteína
-    mw = molecular_weight(sequence, seq_type='protein')
-
-    # Punto isoeléctrico de la proteína
-    try:
-        ip = IsoelectricPoint.IsoelectricPoint(sequence)
-        pI = ip.pi()  # Método correcto es pi() en lugar de isoelectric_point()
-    except ValueError as e:
-        st.error(f"Error de valor: {e}")
-        pI = None 
-    except Exception as e:
-        st.error(f"Error calculando el punto isoeléctrico: {e}")
-        pI = None 
-
-    return mw, pI
 
 st.title("Búsqueda en GenBank")
 nombre = st.text_input("Introduce el nombre cíentifico de la especie para hacer la búsqueda:", "")
@@ -102,6 +82,27 @@ if nombre:
             #DE APARTIR DE AQUÍ PUEDEN EMPEZAR A ESCRIBIR#
             #3 TABS DE SANGRÍA, USAR st.write Y ESAS MIELDAS#
             #ECHENLE GANAS CABRONES#
+            # Función para calcular propiedades biofísicas
+def calcular_propiedades(sequence):
+    # Reemplazamos 'X' por 'A' para evitar problemas
+    sequence = sequence.replace("X", "A")
+
+    # Peso molecular de la proteína
+    mw = molecular_weight(sequence, seq_type='protein')
+
+    # Punto isoeléctrico de la proteína
+    try:
+        ip = IsoelectricPoint.IsoelectricPoint(sequence)
+        pI = ip.pi()  # Método correcto es pi() en lugar de isoelectric_point()
+    except ValueError as e:
+        st.error(f"Error de valor: {e}")
+        pI = None 
+    except Exception as e:
+        st.error(f"Error calculando el punto isoeléctrico: {e}")
+        pI = None 
+
+    return mw, pI
+
             
     else:
         st.write("No se encontraron resultados.")

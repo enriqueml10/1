@@ -47,7 +47,7 @@ def calcular_propiedades(sequence):
 def obtener_nombre_comun(nombre_cientifico):
     """Obtener el nombre común de una especie usando Wikipedia"""
     wiki_wiki = wikipediaapi.Wikipedia('es')  # Idioma español
-    page = wiki_wiki.page(nombre_cientifico)
+    page = wiki_wiki.page(nombre)
     
     if page.exists():
         # Buscar en la introducción del artículo el nombre común

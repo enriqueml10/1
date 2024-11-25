@@ -10,6 +10,7 @@ from Bio.SeqUtils import gc_fraction
 from bs4 import BeautifulSoup
 from collections import Counter
 from Bio.SeqUtils import molecular_weight, IsoelectricPoint
+import wikipediaapi
 st.title("**Dashboard Genético**")
 
 def buscar_proteinas(query):
@@ -43,7 +44,22 @@ def calcular_propiedades(sequence):
         pI = None 
 
     return mw, pI
-
+def obtener_nombre_comun(nombre_cientifico):
+    """Obtener el nombre común de una especie usando Wikipedia"""
+    wiki_wiki = wikipediaapi.Wikipedia('es')  # Idioma español
+    page = wiki_wiki.page(nombre_cientifico)
+    
+    if page.exists():
+        # Buscar en la introducción del artículo el nombre común
+        text = page.text
+        lineas = text.splitlines()
+        
+        for linea in lineas:
+            if "común" in linea.lower():
+                return linea.strip()
+    return "No se encontró el nombre común."
+    nombre_comun = obtener_nombre_comun(nombre_cientifico)
+print(f"Nombre común: {nombre_comun}")
 st.title("Búsqueda en GenBank")
 nombre = st.text_input("Introduce el nombre cíentifico de la especie para hacer la búsqueda:", "")
 if nombre:

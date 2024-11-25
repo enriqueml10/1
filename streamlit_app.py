@@ -62,6 +62,11 @@ if nombre:
             st.write(f"*Longitud de la secuencia*: {len(sequence)} pares de bases")
             st.write("*Primeros 200 nucleótidos de la secuencia:*")
             st.write(sequence[:200])
+            # Propiedades biofísicas
+            st.subheader("Propiedades Biofísicas:")
+            mw, pI = calcular_propiedades(sequence)
+            st.write(f"**Peso Molecular**: {mw:.2f} Da")
+            st.write(f"**Punto Isoeléctrico (pI)**: {pI:.2f}" if pI is not None else "**Punto Isoeléctrico (pI)**: No calculable")
             #AQUÍ LA COMPOSICIÓN DE AMINOÁCIDOS#
             st.subheader("Composición de Aminoácidos:")
             aminoacidos = Counter(sequence)

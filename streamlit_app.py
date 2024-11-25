@@ -44,7 +44,7 @@ def calcular_propiedades(sequence):
         pI = None 
 
     return mw, pI
-def obtener_nombre_comun(nombre_cientifico):
+def obtener_nombre_comun(nombre):
     """Obtener el nombre común de una especie usando Wikipedia"""
     wiki_wiki = wikipediaapi.Wikipedia('es')  # Idioma español
     page = wiki_wiki.page(nombre)
